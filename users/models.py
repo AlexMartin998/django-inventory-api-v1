@@ -7,6 +7,10 @@ from django.contrib.auth.models import (
     UserManager
 )
 
+from backend.models import AuditDateModel
+
+
+
 
 # ### Custom User Model: debemos registrarlo en Django para q lo use en lugar del x default
 class CustomUserManager(UserManager):
@@ -32,7 +36,7 @@ class CustomUserManager(UserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, AuditDateModel):
     email = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
