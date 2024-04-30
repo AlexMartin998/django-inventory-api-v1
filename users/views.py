@@ -35,7 +35,7 @@ def register(request):
         for field in RegisterUserSerializer.Meta.fields:
             if field not in data:
                 missing_fields.append(
-                    f'{field.replace("_", " ").capitalize()} is required'
+                    f'{field.replace("_", " ").capitalize()} es requerido'
                 )
         response_dto = ErrorResponseDTO(status=400, error='Missing fields', missing_fields=missing_fields)
         return Response(response_dto.__dict__, status=400)

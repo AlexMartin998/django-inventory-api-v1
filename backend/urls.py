@@ -21,9 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # ## set v1 as version
-    # path(r'api/v1/', include('users.urls')),
-
-    # ## custom paths
-    path('users/', include('users.urls')),
+    # ## set v1 as version: no se puede colocar 1 prefix generico como en spring o nestjs
+    path('api/v1/users/', include('users.urls')),
 ]
