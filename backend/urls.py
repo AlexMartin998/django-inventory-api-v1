@@ -23,4 +23,6 @@ urlpatterns = [
     
     # ## set v1 as version: no se puede colocar 1 prefix generico como en spring o nestjs
     path('api/v1/users/', include('users.urls')),
+    path('api/v1/categories/', include('products.urls.category_urls')),
+
 ]
