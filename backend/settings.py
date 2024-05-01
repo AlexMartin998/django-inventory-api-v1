@@ -53,6 +53,10 @@ INSTALLED_APPS = [
     
     # rest framework --- custom
     'rest_framework',
+    
+    # swagger
+    'drf_yasg',
+
 
     # own django apps
     'users',
@@ -231,3 +235,18 @@ REST_FRAMEWORK = {
     )
 }
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'SECURITY_REQUIREMENTS': [
+        {
+            'Token': []
+        }
+    ],
+}
