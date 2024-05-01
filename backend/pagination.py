@@ -11,7 +11,6 @@ class CustomPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         return Response({
-            'data': data,
             'meta': {
                 'next': self.page.next_page_number()
                 if self.page.has_next() else None,
@@ -19,6 +18,7 @@ class CustomPagination(PageNumberPagination):
                 if self.page.has_previous() else None,
                 'count': self.page.paginator.count,
                 'total_pages': self.page.paginator.num_pages,
-                }
+                },
+            'data': data
         })
 

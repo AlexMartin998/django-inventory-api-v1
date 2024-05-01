@@ -6,16 +6,21 @@ from backend.pagination import CustomPagination
 from products.models import Category
 from products.serializers import CategorySerializer
 from backend.dtos import ErrorResponseDTO
-
+from products.filters.category_filters import CategoryFilter
 
 
 
 @api_view(['GET'])
 def get_categories(request):
-    categories = Category.objects.all()
+    categories = Category.objects.all().order_by('id')  # Ordenar por 'id'
     pagination = CustomPagination()
-    paginated_categories = pagination.paginate_queryset(categories, request)
-    serializer = CategorySerializer(paginated_categories, many=True)
+
+    # filter
+    category_filter = CategoryFilter(request.GET, queryset=categories)
+    categories = category_filter.qs
+    
+    result_page = pagination.paginate_queryset(categories, request)
+    serializer = CategorySerializer(result_page, many=True)
     return pagination.get_paginated_response(serializer.data)
 
 
