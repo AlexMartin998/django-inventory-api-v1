@@ -6,7 +6,9 @@ class Custom404Middleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if response.status_code == 404:
-            return JsonResponse({'error': 'Not found'}, status=404)
+        if response.status_code == 404 and not isinstance(response, JsonResponse):
+            return JsonResponse({
+                'status': 404,
+                'error': 'Resource not found',
+            }, status=404)
         return response
-

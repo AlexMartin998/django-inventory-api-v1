@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     # rest framework --- custom
     'rest_framework',
     
+    # filters
+    'django_filters',
+    
     # swagger
     'drf_yasg',
 
