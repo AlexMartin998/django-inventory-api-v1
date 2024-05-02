@@ -17,6 +17,8 @@ from products.serializers import CategorySerializer, CategoryFilterSerializer
 from products.filters.category_filters import CategoryFilter
 from backend.shared.constants import page_size_openapi, page_openapi
 
+from django.utils import timezone
+import time
 
 
 @swagger_auto_schema(
@@ -81,10 +83,21 @@ def create_category(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=201)
+    
+    current_time = timezone.now()
+    current_time_in_current_timezone = current_time.astimezone(timezone.get_current_timezone())
+    print(current_time_in_current_timezone)
+    
+    print('----------')
+    print(time.tzname)
+    print('----222-----')
+    print(timezone.get_current_timezone())
+    
     return Response({
         'status':400,
         'error':'Bad Request',
         'invalid_fields':serializer.errors,
+        'data': f'{current_time}'
     }, status=400)
 
 # def create_category(request):
