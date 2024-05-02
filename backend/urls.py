@@ -58,4 +58,6 @@ urlpatterns = [
     path('api/v1/users/', include('users.urls')),
     path('api/v1/categories/', include('products.urls.category_urls')),
 
+    path('api/v1/subcategories/', include('products.urls.subcategory_urls')),
+
 ]
