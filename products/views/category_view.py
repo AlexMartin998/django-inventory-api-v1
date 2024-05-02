@@ -17,8 +17,6 @@ from products.serializers import CategorySerializer, CategoryFilterSerializer
 from products.filters.category_filters import CategoryFilter
 from backend.shared.constants import page_size_openapi, page_openapi
 
-from django.utils import timezone
-import time
 
 
 @swagger_auto_schema(
@@ -57,7 +55,7 @@ def get_category(request, id):
         category = get_object_or_404(Category, pk=id)
         serializer = CategorySerializer(category)
         return Response(serializer.data)
-    except Http404:
+    except Http404: # x el middleware custom 404
         error = ErrorResponseDTO(
             status=404,
             error=f"{Category.__name__ } with id '{id}' does not exist"
@@ -84,20 +82,11 @@ def create_category(request):
         serializer.save()
         return Response(serializer.data, status=201)
     
-    current_time = timezone.now()
-    current_time_in_current_timezone = current_time.astimezone(timezone.get_current_timezone())
-    print(current_time_in_current_timezone)
-    
-    print('----------')
-    print(time.tzname)
-    print('----222-----')
-    print(timezone.get_current_timezone())
-    
+    # print(timezone.get_current_timezone()) # get django timezone - settings.py
     return Response({
         'status':400,
         'error':'Bad Request',
         'invalid_fields':serializer.errors,
-        'data': f'{current_time}'
     }, status=400)
 
 # def create_category(request):
