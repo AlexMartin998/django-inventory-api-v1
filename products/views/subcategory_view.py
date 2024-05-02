@@ -86,7 +86,8 @@ class SubcategoryDetailView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializer),
         },
     )
-    def put(self, request, id):
+    def patch(self, request, id):
+    # def put(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
             serializer = SubcategorySerializer(
