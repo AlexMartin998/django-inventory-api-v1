@@ -185,6 +185,9 @@ CORS_ALLOWED_ORIGINS = os.environ.get('ALLOWED_HOSTS').split(',')
 CORS_ALLOW_CREDENTIALS = True
 
 
+# APPEND_SLASH = False
+
+
 
 # ### Timezone
 # Internationalization

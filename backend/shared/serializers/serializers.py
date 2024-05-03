@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 
-
-# ### Filters
+# ### Filters ========================
 class FiltersBaseSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(FiltersBaseSerializer, self).__init__(*args, **kwargs)
@@ -10,8 +9,7 @@ class FiltersBaseSerializer(serializers.ModelSerializer):
             field.required = False
 
 
-
-# ### Errors
+# ### Errors ========================
 class NotFoundSerializer(serializers.Serializer):
     error = serializers.CharField()
     status = serializers.IntegerField()
@@ -20,22 +18,22 @@ class NotFoundSerializer(serializers.Serializer):
 class BadRequestSerializerDoc(serializers.Serializer):
     status = serializers.IntegerField(required=False)
     message = serializers.CharField(required=False)
-    missing_fields = serializers.ListField(child=serializers.CharField(), required=False)
-    invalid_fields = serializers.ListField(child=serializers.CharField(), required=False)
+    # missing_fields = serializers.ListField(child=serializers.CharField(), required=False)
+    invalid_fields = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
     data = serializers.CharField(required=False)
 
 
 class BadRequestSerializer(serializers.Serializer):
     status = serializers.IntegerField(required=False)
     message = serializers.CharField(required=False)
-    missing_fields = serializers.ListField(required=False)
+    # missing_fields = serializers.ListField(required=False)
     invalid_fields = serializers.ListField(required=False)
     data = serializers.CharField(required=False)
 
 
-
-
-# ### Swagger
+# ### Swagger ========================
 class OptionalFieldsModelSerializer(serializers.ModelSerializer):
     def get_fields(self, *args, **kwargs):
         fields = super(OptionalFieldsModelSerializer, self).get_fields(*args, **kwargs)
@@ -43,3 +41,15 @@ class OptionalFieldsModelSerializer(serializers.ModelSerializer):
             field.required = False
         return fields
 
+
+# ## Get all
+class MetaSerializer(serializers.Serializer):
+    next = serializers.CharField(required=False)
+    previous = serializers.CharField(required=False)
+    count = serializers.IntegerField(required=False)
+    total_pages = serializers.IntegerField(required=False)
+
+
+class QueryDocWrapperSerializer(serializers.Serializer):
+    meta = MetaSerializer(required=False)
+    data = serializers.ListField(required=False)
