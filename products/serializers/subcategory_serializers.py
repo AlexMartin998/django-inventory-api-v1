@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from backend.shared.serializers.serializers import FiltersBaseSerializer
+from backend.shared.serializers.serializers import FiltersBaseSerializer, OptionalFieldsModelSerializer
 from products.models.subcategory_model import SubCategory
 
 
-# ### Subcategory =================================
+
 class SubcategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
@@ -12,6 +12,19 @@ class SubcategorySerializer(serializers.ModelSerializer):
 
 
 class SubcategoryFilterSerializer(FiltersBaseSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
+
+
+# ## Swagger
+class SubcategoryBodyDocSerializer(OptionalFieldsModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
+class SubcategoryQueryDocSerializer(OptionalFieldsModelSerializer):
     class Meta:
         model = SubCategory
         fields = '__all__'

@@ -12,10 +12,20 @@ from drf_yasg import openapi
 from backend.dtos import ErrorResponseDTO
 from backend.shared.utils.pagination import CustomPagination
 from products.models.subcategory_model import SubCategory
-from products.serializers.subcategory_serializers import SubcategorySerializer, SubcategoryFilterSerializer
+from products.serializers.subcategory_serializers import (
+    SubcategorySerializer,
+    SubcategoryFilterSerializer,
+    SubcategoryBodyDocSerializer,
+    SubcategorySerializer,
+    SubcategoryQueryDocSerializer
+)
 from products.filters.subcategory_filters import SubcategoryFilter
-from backend.shared.serializers.serializers import NotFoundSerializer, BadRequestSerializer
+from backend.shared.serializers.serializers import (
+    NotFoundSerializer,
+    BadRequestSerializer,
+)
 from backend.shared.constants.constants import page_size_openapi, page_openapi
+
 
 
 class SubcategoryView(APIView):
@@ -38,7 +48,7 @@ class SubcategoryView(APIView):
     @swagger_auto_schema(
         # method='GET',  # with class-based views, the method is determined by the actual method on the class
         operation_description="Listado de Subcagorias",
-        responses={200: openapi.Response("OK", SubcategorySerializer(many=True))},
+        responses={200: openapi.Response("OK", SubcategoryQueryDocSerializer(many=True))},
         # filters:
         query_serializer=SubcategoryFilterSerializer,
         manual_parameters=[page_size_openapi, page_openapi],
@@ -61,7 +71,7 @@ class SubcategoryDetailView(APIView):
     @swagger_auto_schema(
         operation_description="Detalle de Subcategoria",
         responses={
-            200: openapi.Response("OK", SubcategorySerializer),
+            200: openapi.Response("OK", SubcategoryQueryDocSerializer),
             404: openapi.Response("Not Found", NotFoundSerializer),
         },
     )
@@ -79,7 +89,7 @@ class SubcategoryDetailView(APIView):
 
     @swagger_auto_schema(
         operation_description="Actualización de Subcategoria",
-        request_body=SubcategorySerializer,
+        request_body=SubcategoryBodyDocSerializer,
         responses={
             200: openapi.Response("OK", SubcategorySerializer),
             404: openapi.Response("Not Found", NotFoundSerializer),
@@ -87,7 +97,7 @@ class SubcategoryDetailView(APIView):
         },
     )
     def patch(self, request, id):
-    # def put(self, request, id):
+        # def put(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
             serializer = SubcategorySerializer(
@@ -128,4 +138,3 @@ class SubcategoryDetailView(APIView):
         except Exception as e:
             error = ErrorResponseDTO(status=400, error=str(e))
             return JsonResponse(error.__dict__, status=status.HTTP_400_BAD_REQUEST)
-
