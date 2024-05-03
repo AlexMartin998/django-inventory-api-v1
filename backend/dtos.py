@@ -1,20 +1,21 @@
-class ErrorResponseDTO:
-    def __init__(self, status, error, missing_fields=None, invalid_fields=None):
-        self.status = status
-        self.error = error
-        self.missing_fields = missing_fields
-        self.invalid_fields = invalid_fields
-        self.data = None
+from typing import List, Optional
 
-class SuccessResponseDTO:
-    def __init__(self, status, data, message=None):
+
+class ErrorResponseDTO:
+    def __init__(
+        self,
+        status: int,
+        message: str,
+        invalid_fields: Optional[List[str]] = None,
+        data: Optional[dict] = None,
+    ):
         self.status = status
         self.message = message
+        self.invalid_fields = invalid_fields
         self.data = data
 
 
-class CreatePostDTO(SuccessResponseDTO):
-    def __init__(self, status, data, message=None):
-        super().__init__(status, data, message)
-        self.created_at = data['created_at']
-
+class NotFoundErrorResponseDTO:
+    def __init__(self, status: int, message: str):
+        self.status = status
+        self.message = message

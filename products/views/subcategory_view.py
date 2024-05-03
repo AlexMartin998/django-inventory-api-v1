@@ -9,11 +9,10 @@ from django.http import JsonResponse
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from backend.dtos import ErrorResponseDTO
+from backend.dtos import ErrorResponseDTO, NotFoundErrorResponseDTO
 from backend.shared.utils.pagination import CustomPagination
 from backend.shared.serializers.serializers import (
     NotFoundSerializer,
-    BadRequestSerializer,
     BadRequestSerializerDoc,
 )
 from backend.shared.constants.constants import page_size_openapi, page_openapi
@@ -39,26 +38,34 @@ class SubcategoryView(APIView):
     )
     def post(self, request):
         serializer = SubcategorySerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         # Transform the errors dictionary into a list of strings
-        invalid_fields = []
-        for field, errors in serializer.errors.items():
-            for error in errors:
-                invalid_fields.append(f"{field}: {error}")
+        invalid_fields = [
+            f"{field}: {error}"
+            for field, errors in serializer.errors.items()
+            for error in errors
+        ]
 
-        bad_request = BadRequestSerializer(
-            data={
-                "status": 400,
-                "message": "Bad Request",
-                "invalid_fields": invalid_fields,
-            },
+        bad_request = ErrorResponseDTO(
+            status=status.HTTP_400_BAD_REQUEST,
+            message="Bad Request",
+            invalid_fields=invalid_fields,
         )
-        if bad_request.is_valid():
-            return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
-        return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
+        # ## with serializer:
+        # bad_request = BadRequestSerializer(
+        #     data={
+        #         "status": status.HTTP_400_BAD_REQUEST,
+        #         "message": "Bad Request",
+        #         "invalid_fields": invalid_fields,
+        #     },
+        # )
+        # if bad_request.is_valid():
+        #     return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         # method='GET',  # with class-based views, the method is determined by the actual method on the class
@@ -96,17 +103,31 @@ class SubcategoryDetailView(APIView):
             serializer = SubcategorySerializer(subcategory)
             return Response(serializer.data)
         except Http404:
-            error = ErrorResponseDTO(
-                status=404,
-                error=f"{SubCategory.__name__} with id '{id}' does not exist",
+            not_found = NotFoundErrorResponseDTO(
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{SubCategory.__name__} with id '{id}' does not exist",
             )
             return JsonResponse(
-                error.__dict__, status=status.HTTP_404_NOT_FOUND
-            )  # x el middleware custom 404
+                not_found.__dict__, status=status.HTTP_404_NOT_FOUND
+            )  # JsonResponse x el middleware custom 404
+
+            # not_found = NotFoundSerializer(
+            #     data={
+            #         "status": status.HTTP_404_NOT_FOUND,
+            #         "message": f"{SubCategory.__name__} with id '{id}' does not exist",
+            #     }
+            # )
+            # if not_found.is_valid():
+            #     return JsonResponse(
+            #         not_found.data, status=status.HTTP_404_NOT_FOUND
+            #     )  # JsonResponse x el middleware custom 404
+            # return JsonResponse(not_found.data, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response(
-                {"status": 500, "message": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            error = ErrorResponseDTO(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
+            )
+            return JsonResponse(
+                error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     @swagger_auto_schema(
@@ -133,29 +154,26 @@ class SubcategoryDetailView(APIView):
                 for field, errors in serializer.errors.items():
                     for error in errors:
                         invalid_fields.append(f"{field}: {error}")
-
-                bad_request = BadRequestSerializer(
-                    data={
-                        "status": 400,
-                        "message": "Bad Request",
-                        "invalid_fields": invalid_fields,
-                    },
+                bad_request = ErrorResponseDTO(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    message="Bad Request",
+                    invalid_fields=invalid_fields,
                 )
-                if bad_request.is_valid():
-                    return Response(
-                        bad_request.data, status=status.HTTP_400_BAD_REQUEST
-                    )
-                return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST
+                )
         except Http404:
             error = ErrorResponseDTO(
-                status=404,
-                error=f"{SubCategory.__name__} with id '{id}' does not exist",
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{SubCategory.__name__} with id '{id}' does not exist",
             )
             return JsonResponse(error.__dict__, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            error = ErrorResponseDTO(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
+            )
             return Response(
-                {"status": 500, "message": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     @swagger_auto_schema(
@@ -173,10 +191,14 @@ class SubcategoryDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Http404:
             error = ErrorResponseDTO(
-                status=404,
-                error=f"{SubCategory.__name__} with id '{id}' does not exist",
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{SubCategory.__name__} with id '{id}' does not exist",
             )
             return JsonResponse(error.__dict__, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            error = ErrorResponseDTO(status=400, error=str(e))
-            return JsonResponse(error.__dict__, status=status.HTTP_400_BAD_REQUEST)
+            error = ErrorResponseDTO(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
+            )
+            return Response(
+                error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
