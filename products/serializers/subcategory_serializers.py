@@ -24,6 +24,11 @@ class SubcategoryBodyDocSerializer(OptionalFieldsModelSerializer):
         model = SubCategory
         fields = '__all__'
 
+class SubcategoryResDocSerializer(OptionalFieldsModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
 class SubcategoryQueryDocSerializer(OptionalFieldsModelSerializer):
     class Meta:
         model = SubCategory

@@ -11,7 +11,7 @@ from drf_yasg import openapi
 
 from backend.shared.utils.pagination import CustomPagination
 from backend.dtos import ErrorResponseDTO
-from backend.shared.serializers.serializers import NotFoundSerializer, BadRequestSerializer
+from backend.shared.serializers.serializers import NotFoundSerializer, BadRequestSerializerDoc
 from products.models.category_model import Category
 from products.serializers.category_serializers import CategorySerializer, CategoryFilterSerializer
 from products.filters.category_filters import CategoryFilter
@@ -72,7 +72,7 @@ def get_category(request, id):
     request_body=CategorySerializer,
     responses={
         201:openapi.Response("OK", CategorySerializer),
-        400:openapi.Response("Bad Request", BadRequestSerializer),
+        400:openapi.Response("Bad Request", BadRequestSerializerDoc),
     }
 )
 @api_view(['POST'])
@@ -111,7 +111,7 @@ def create_category(request):
     responses={
         200:openapi.Response("OK", CategorySerializer),
         404:openapi.Response("Not Found", NotFoundSerializer),
-        400:openapi.Response("Bad Request", BadRequestSerializer),
+        400:openapi.Response("Bad Request", BadRequestSerializerDoc),
     }
 )
 @api_view(['PUT'])
@@ -149,7 +149,7 @@ def update_category(request, id):
     responses={
         204:openapi.Response("OK", None),
         404:openapi.Response("Not Found", NotFoundSerializer),
-        400:openapi.Response("Bad Request", BadRequestSerializer),
+        400:openapi.Response("Bad Request", BadRequestSerializerDoc),
     }
 )
 @api_view(['DELETE'])

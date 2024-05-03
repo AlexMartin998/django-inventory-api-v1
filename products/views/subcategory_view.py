@@ -16,16 +16,17 @@ from products.serializers.subcategory_serializers import (
     SubcategorySerializer,
     SubcategoryFilterSerializer,
     SubcategoryBodyDocSerializer,
+    SubcategoryResDocSerializer,
     SubcategorySerializer,
-    SubcategoryQueryDocSerializer
+    SubcategoryQueryDocSerializer,
 )
 from products.filters.subcategory_filters import SubcategoryFilter
 from backend.shared.serializers.serializers import (
     NotFoundSerializer,
     BadRequestSerializer,
+    BadRequestSerializerDoc,
 )
 from backend.shared.constants.constants import page_size_openapi, page_openapi
-
 
 
 class SubcategoryView(APIView):
@@ -33,8 +34,8 @@ class SubcategoryView(APIView):
         operation_description="Creación de Subcategoria",
         request_body=SubcategorySerializer,
         responses={
-            201: openapi.Response("OK", SubcategorySerializer),
-            400: openapi.Response("Bad Request", BadRequestSerializer),
+            201: openapi.Response("OK", SubcategoryResDocSerializer),
+            400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
     def post(self, request):
@@ -42,13 +43,25 @@ class SubcategoryView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        error = ErrorResponseDTO(status=400, error=serializer.errors)
-        return Response(error.__dict__, status=status.HTTP_400_BAD_REQUEST)
+        bad_request = BadRequestSerializer(data={
+            'status': 400, 
+            'message': serializer.errors, 
+            'data': request.data
+        })
+        return Response(
+            {
+                "status": 400,
+                "message": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     @swagger_auto_schema(
         # method='GET',  # with class-based views, the method is determined by the actual method on the class
         operation_description="Listado de Subcagorias",
-        responses={200: openapi.Response("OK", SubcategoryQueryDocSerializer(many=True))},
+        responses={
+            200: openapi.Response("OK", SubcategoryQueryDocSerializer(many=True))
+        },
         # filters:
         query_serializer=SubcategoryFilterSerializer,
         manual_parameters=[page_size_openapi, page_openapi],
@@ -91,9 +104,9 @@ class SubcategoryDetailView(APIView):
         operation_description="Actualización de Subcategoria",
         request_body=SubcategoryBodyDocSerializer,
         responses={
-            200: openapi.Response("OK", SubcategorySerializer),
+            200: openapi.Response("OK", SubcategoryResDocSerializer),
             404: openapi.Response("Not Found", NotFoundSerializer),
-            400: openapi.Response("Bad Request", BadRequestSerializer),
+            400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
     def patch(self, request, id):
@@ -113,15 +126,17 @@ class SubcategoryDetailView(APIView):
             )
             return JsonResponse(error.__dict__, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            error = ErrorResponseDTO(status=400, error=str(e))
-            return JsonResponse(error.__dict__, status=status.HTTP_400_BAD_REQUEST)
+            bad_request = BadRequestSerializer(status=400, message=str(e))
+            return JsonResponse(
+                bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST
+            )
 
     @swagger_auto_schema(
         operation_description="Eliminación de Subcategoria",
         responses={
             204: openapi.Response("OK", None),
             404: openapi.Response("Not Found", NotFoundSerializer),
-            400: openapi.Response("Bad Request", BadRequestSerializer),
+            400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
     def delete(self, request, id):
