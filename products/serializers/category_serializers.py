@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from backend.serializers import FiltersBaseSerializer
-from products.models import Category
+from products.models.category_model import Category
 
 
 # ### Category =================================

@@ -1,5 +1,5 @@
 from backend.shared.filters import BaseFilter
-from products.models import Category
+from products.models.category_model import Category
 
 
 class CategoryFilter(BaseFilter):

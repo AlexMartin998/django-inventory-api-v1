@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from backend.serializers import FiltersBaseSerializer
-from products.models import SubCategory
+from products.models.subcategory_model import SubCategory
 
 
 # ### Subcategory =================================

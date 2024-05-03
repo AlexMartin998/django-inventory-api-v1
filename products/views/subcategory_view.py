@@ -11,7 +11,7 @@ from drf_yasg import openapi
 
 from backend.dtos import ErrorResponseDTO
 from backend.pagination import CustomPagination
-from products.models import SubCategory
+from products.models.subcategory_model import SubCategory
 from products.serializers.subcategory_serializers import SubcategorySerializer, SubcategoryFilterSerializer
 from products.filters.subcategory_filters import SubcategoryFilter
 from backend.serializers import NotFoundSerializer, BadRequestSerializer
