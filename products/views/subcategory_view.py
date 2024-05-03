@@ -5,9 +5,14 @@ from django.http import Http404
 from rest_framework import status
 from django.http import JsonResponse
 
+# authentication
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 # docs openapi
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
 
 from backend.dtos import ErrorResponseDTO, NotFoundErrorResponseDTO
 from backend.shared.utils.pagination import CustomPagination
@@ -36,6 +41,7 @@ class SubcategoryView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
+    @permission_classes([IsAuthenticated])
     def post(self, request):
         serializer = SubcategorySerializer(data=request.data)
 
@@ -75,6 +81,7 @@ class SubcategoryView(APIView):
         query_serializer=SubcategoryFilterSerializer,
         manual_parameters=[page_size_openapi, page_openapi],
     )
+    @permission_classes([IsAuthenticated])
     def get(self, request):
         subcategories = SubCategory.objects.all().order_by("id")
         pagination = CustomPagination()
@@ -97,6 +104,7 @@ class SubcategoryDetailView(APIView):
             404: openapi.Response("Not Found", NotFoundSerializer),
         },
     )
+    @permission_classes([IsAuthenticated])
     def get(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
@@ -139,6 +147,7 @@ class SubcategoryDetailView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
+    @permission_classes([IsAuthenticated])
     def patch(self, request, id):
         # def put(self, request, id):
         try:
@@ -184,6 +193,7 @@ class SubcategoryDetailView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
+    @permission_classes([IsAuthenticated])
     def delete(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
