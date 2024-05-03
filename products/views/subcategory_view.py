@@ -11,21 +11,21 @@ from drf_yasg import openapi
 
 from backend.dtos import ErrorResponseDTO
 from backend.shared.utils.pagination import CustomPagination
-from products.models.subcategory_model import SubCategory
-from products.serializers.subcategory_serializers import (
-    SubcategorySerializer,
-    SubcategoryFilterSerializer,
-    SubcategoryQueryDocWrapperSerializer,
-    SubcategoryOptDocSerializer,
-    SubcategoryResDocSerializer
-)
-from products.filters.subcategory_filters import SubcategoryFilter
 from backend.shared.serializers.serializers import (
     NotFoundSerializer,
     BadRequestSerializer,
     BadRequestSerializerDoc,
 )
 from backend.shared.constants.constants import page_size_openapi, page_openapi
+from products.models.subcategory_model import SubCategory
+from products.serializers.subcategory_serializers import (
+    SubcategorySerializer,
+    SubcategoryFilterSerializer,
+    SubcategoryQueryDocWrapperSerializer,
+    SubcategoryOptDocSerializer,
+    SubcategoryResDocSerializer,
+)
+from products.filters.subcategory_filters import SubcategoryFilter
 
 
 class SubcategoryView(APIView):
@@ -103,6 +103,11 @@ class SubcategoryDetailView(APIView):
             return JsonResponse(
                 error.__dict__, status=status.HTTP_404_NOT_FOUND
             )  # x el middleware custom 404
+        except Exception as e:
+            return Response(
+                {"status": 500, "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @swagger_auto_schema(
         operation_description="Actualización de Subcategoria",
@@ -123,6 +128,24 @@ class SubcategoryDetailView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
+            else:
+                invalid_fields = []
+                for field, errors in serializer.errors.items():
+                    for error in errors:
+                        invalid_fields.append(f"{field}: {error}")
+
+                bad_request = BadRequestSerializer(
+                    data={
+                        "status": 400,
+                        "message": "Bad Request",
+                        "invalid_fields": invalid_fields,
+                    },
+                )
+                if bad_request.is_valid():
+                    return Response(
+                        bad_request.data, status=status.HTTP_400_BAD_REQUEST
+                    )
+                return Response(bad_request.data, status=status.HTTP_400_BAD_REQUEST)
         except Http404:
             error = ErrorResponseDTO(
                 status=404,
@@ -130,9 +153,9 @@ class SubcategoryDetailView(APIView):
             )
             return JsonResponse(error.__dict__, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            bad_request = BadRequestSerializer(status=400, message=str(e))
-            return JsonResponse(
-                bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST
+            return Response(
+                {"status": 500, "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
     @swagger_auto_schema(
