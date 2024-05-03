@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.serializers import FiltersBaseSerializer
+from backend.shared.serializers.serializers import FiltersBaseSerializer
 from products.models.category_model import Category
 
 

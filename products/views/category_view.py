@@ -9,13 +9,13 @@ from django.http import JsonResponse, Http404
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from backend.pagination import CustomPagination
+from backend.shared.utils.pagination import CustomPagination
 from backend.dtos import ErrorResponseDTO
-from backend.serializers import NotFoundSerializer, BadRequestSerializer
+from backend.shared.serializers.serializers import NotFoundSerializer, BadRequestSerializer
 from products.models.category_model import Category
 from products.serializers.category_serializers import CategorySerializer, CategoryFilterSerializer
 from products.filters.category_filters import CategoryFilter
-from backend.shared.constants import page_size_openapi, page_openapi
+from backend.shared.constants.constants import page_size_openapi, page_openapi
 
 
 

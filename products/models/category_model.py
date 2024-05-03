@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.models import AuditDateModel
+from backend.shared.models.models import AuditDateModel
 
 
 # como AuditDateModel ya hereda de models.Model, no es necesario hacerlo en Product

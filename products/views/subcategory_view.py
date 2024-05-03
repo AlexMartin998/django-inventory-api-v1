@@ -10,12 +10,12 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from backend.dtos import ErrorResponseDTO
-from backend.pagination import CustomPagination
+from backend.shared.utils.pagination import CustomPagination
 from products.models.subcategory_model import SubCategory
 from products.serializers.subcategory_serializers import SubcategorySerializer, SubcategoryFilterSerializer
 from products.filters.subcategory_filters import SubcategoryFilter
-from backend.serializers import NotFoundSerializer, BadRequestSerializer
-from backend.shared.constants import page_size_openapi, page_openapi
+from backend.shared.serializers.serializers import NotFoundSerializer, BadRequestSerializer
+from backend.shared.constants.constants import page_size_openapi, page_openapi
 
 
 class SubcategoryView(APIView):

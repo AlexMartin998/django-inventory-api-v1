@@ -81,8 +81,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
     # ### 404 middleware
-    # 'backend.middlewares.Custom404Middleware',
-    'backend.middlewares.Custom404Middleware',
+    'backend.shared.middlewares.middlewares.Custom404Middleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'

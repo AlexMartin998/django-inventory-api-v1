@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
     UserManager
 )
 
-from backend.models import AuditDateModel
+from backend.shared.models.models import AuditDateModel
 
 
 

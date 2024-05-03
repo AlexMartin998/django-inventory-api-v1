@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.models import AuditDateModel
+from backend.shared.models.models import AuditDateModel
 from users.models import User
 from .product_model import Product
 

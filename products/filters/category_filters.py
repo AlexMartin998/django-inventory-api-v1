@@ -1,4 +1,4 @@
-from backend.shared.filters import BaseFilter
+from backend.shared.filters.filters import BaseFilter
 from products.models.category_model import Category
 
 
