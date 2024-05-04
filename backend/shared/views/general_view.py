@@ -27,11 +27,6 @@ class GeneralAPIView(APIView, PermissionRequiredMixin):
     serializer = None  # model serializer - POST & PUT
     serializer2 = None  # Get All & Get By ID - response
 
-    # serializer2 = None  # POST & PUT
-    # serializer_doc_body = None
-    # serializer_doc_query = None
-    # serializer_doc_filter = None
-
     # ## auxiliar methods =================
     # override post method
     def custom_post_method(self, request, model_instance):
