@@ -112,7 +112,7 @@ class SubcategoryDetailView(APIView):
             # pass custom field to serializer (manual way) | se puede setear la logica en el mismo serializer
             data = {
                 **subcategory.__dict__,
-                'some_custom_field': 'Some custom field value'
+                "some_custom_field": "Some custom field value",
             }
             serializer = SubcategoryResDocSerializer(data)
             return Response(serializer.data)
@@ -145,7 +145,7 @@ class SubcategoryDetailView(APIView):
             )
 
     @swagger_auto_schema(
-        operation_description="Actualización de Subcategoria",
+        operation_description="Actualizar Subcategoria",
         request_body=SubcategoryOptDocSerializer,
         responses={
             200: openapi.Response("OK", SubcategoryOptDocSerializer),
@@ -162,7 +162,7 @@ class SubcategoryDetailView(APIView):
             )
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 invalid_fields = []
                 for field, errors in serializer.errors.items():

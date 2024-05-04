@@ -11,8 +11,8 @@ class FiltersBaseSerializer(serializers.ModelSerializer):
 
 # ### Errors ========================
 class NotFoundSerializer(serializers.Serializer):
-    status = serializers.IntegerField()
-    message = serializers.CharField()
+    status = serializers.IntegerField(required=False)
+    message = serializers.CharField(required=False)
 
 
 class BadRequestSerializerDoc(serializers.Serializer):

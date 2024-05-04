@@ -8,7 +8,10 @@ from drf_yasg import openapi
 
 from backend.shared.views.general_view import GeneralAPIView, GeneralDetailAPIView
 from backend.shared.constants.constants import page_size_openapi, page_openapi
-from backend.shared.serializers.serializers import BadRequestSerializerDoc
+from backend.shared.serializers.serializers import (
+    BadRequestSerializerDoc,
+    NotFoundSerializer,
+)
 
 from products.filters.product_measurement_filters import ProductMeasurementFilter
 from products.models.product_measurement_model import ProductMeasurement
@@ -69,11 +72,27 @@ class ProductMeasurementDetailView(GeneralDetailAPIView):
     serializer2 = ProductMeasurementResDocSerializer  # Get All & Get By ID - response
 
     # ### main methods =================
+    @swagger_auto_schema(
+        operation_description="Detalle de unidad de medida",
+        responses={
+            200: openapi.Response("OK", ProductMeasurementOptDocSerializer),
+            404: openapi.Response("Not Found", NotFoundSerializer),
+        },
+    )
     def get(self, request, pk):
         return super().get(request, pk)
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+    @swagger_auto_schema(
+        operation_description="Actualizar unidad de medida",
+        request_body=ProductMeasurementOptDocSerializer,
+        responses={
+            200: openapi.Response("OK", ProductMeasurementOptDocSerializer),
+            404: openapi.Response("Not Found", NotFoundSerializer),
+            400: openapi.Response("Bad Request", BadRequestSerializerDoc),
+        },
+    )
+    def patch(self, request, pk):
+        return super().patch(request, pk)
 
-    # def patch(self, request, *args, **kwargs):
+    # def put(self, request, *args, **kwargs):
     #     return self.partial_update(request, *args, **kwargs)
