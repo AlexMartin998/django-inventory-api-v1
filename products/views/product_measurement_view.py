@@ -94,5 +94,15 @@ class ProductMeasurementDetailView(GeneralDetailAPIView):
     def patch(self, request, pk):
         return super().patch(request, pk)
 
+    @swagger_auto_schema(
+        operation_description="Eliminar unidad de medida",
+        responses={
+            204: openapi.Response("OK"),
+            404: openapi.Response("Not Found", NotFoundSerializer),
+        },
+    )
+    def delete(self, request, pk):
+        return super().delete(request, pk)
+
     # def put(self, request, *args, **kwargs):
     #     return self.partial_update(request, *args, **kwargs)
