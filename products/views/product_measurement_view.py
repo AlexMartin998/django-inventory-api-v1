@@ -23,7 +23,7 @@ class ProductMeasurementView(GeneralViewAPI):
     serializer = ProductMeasurementSerializer
 
     @swagger_auto_schema(
-        operation_description="Obtener una unidad de medida",
+        operation_description="Obtener unidades de medida",
         responses={
             200: openapi.Response("OK", ProductMeasurementQueryDocWrapperSerializer),
         },

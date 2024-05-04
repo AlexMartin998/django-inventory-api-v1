@@ -32,7 +32,7 @@ from products.filters.subcategory_filters import SubcategoryFilter
 
 
 class SubcategoryView(APIView):
-    # with class-based views, the method is determined by the actual method on the class
+    # with class-based views, the method is determined by the actual method on the class - isAuth
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
