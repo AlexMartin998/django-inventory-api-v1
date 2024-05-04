@@ -77,7 +77,6 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
     permission_classes = [IsAuthenticated]
 
     model = None
-    serializer = None
     required_fields = []  # additonal fields to validate
 
     # ## serializers =================
@@ -85,7 +84,7 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
     serializer2 = None  # Get All & Get By ID - response
 
     # ## auxiliar methods =================
-    def custom_put_method(self, request, model_instance):
+    def aux_patch_method(self, request, model_instance):
         return None
 
     # ## main methods =================
@@ -101,3 +100,41 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
             )
             return JsonResponse(not_found.__dict__, status=status.HTTP_404_NOT_FOUND)
 
+    def patch(self, request, pk):
+        try:
+            model_instance = get_object_or_404(self.model, pk=pk)
+            serializer = self.serializer(
+                model_instance, data=request.data, partial=True
+            )
+            if serializer.is_valid():
+                model_instance = serializer.save()
+                aux_patch_method_res = self.aux_patch_method(request, model_instance)
+                if aux_patch_method_res:
+                    return aux_patch_method_res
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            # Transform the errors dictionary into a list of strings
+            invalid_fields = [
+                f"{field}: {error}"
+                for field, errors in serializer.errors.items()
+                for error in errors
+            ]
+            bad_request = ErrorResponseDTO(
+                status=status.HTTP_400_BAD_REQUEST,
+                message="Bad Request",
+                invalid_fields=invalid_fields,
+            )
+            return Response(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
+        except Http404:
+            not_found = NotFoundErrorResponseDTO(
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{self.model.__name__} with id '{pk}' not found",
+            )
+            return JsonResponse(not_found.__dict__, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            error = ErrorResponseDTO(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
+            )
+            return Response(
+                error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
