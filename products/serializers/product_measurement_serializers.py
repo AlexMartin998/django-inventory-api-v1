@@ -14,6 +14,15 @@ class ProductMeasurementSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# ## Response: Get All & Get By ID
+class ProductMeasurementResponseSerializer(FiltersBaseSerializer):
+    some_custom_field = serializers.CharField(required=False)
+
+    class Meta:
+        model = ProductMeasurement
+        fields = "__all__"
+
+
 # ### Filter Serializer - Get All ===============
 class ProductMeasurementFilterSerializer(FiltersBaseSerializer):
     some_custom_filter = serializers.CharField(required=False)
@@ -31,15 +40,6 @@ class ProductMeasurementOptDocSerializer(FiltersBaseSerializer):
         fields = "__all__"
 
 
-# ## Response: Get All & Get By ID
-class ProductMeasurementResDocSerializer(FiltersBaseSerializer):
-    some_custom_field = serializers.CharField(required=False)
-
-    class Meta:
-        model = ProductMeasurement
-        fields = "__all__"
-
-
 # ## Get All Response
 class ProductMeasurementQueryDocWrapperSerializer(QueryDocWrapperSerializer):
-    data = ProductMeasurementResDocSerializer(many=True, required=False)
+    data = ProductMeasurementResponseSerializer(many=True, required=False)

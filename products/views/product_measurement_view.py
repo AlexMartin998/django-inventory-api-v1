@@ -21,7 +21,7 @@ from products.models.product_measurement_model import ProductMeasurement
 from products.serializers.product_measurement_serializers import (
     ProductMeasurementSerializer,
     ProductMeasurementQueryDocWrapperSerializer,
-    ProductMeasurementResDocSerializer,
+    ProductMeasurementResponseSerializer,
     ProductMeasurementFilterSerializer,
     ProductMeasurementOptDocSerializer,
 )
@@ -31,8 +31,8 @@ class ProductMeasurementView(GeneralAPIView):
     model = ProductMeasurement
     filter = ProductMeasurementFilter
 
-    serializer = ProductMeasurementSerializer  # model serializer
-    serializer2 = ProductMeasurementResDocSerializer  # Get All & Get By ID - response
+    serializer = ProductMeasurementSerializer  # model serializer: Post & Patch
+    serializer2 = ProductMeasurementResponseSerializer  # Get All & Get By ID - response
 
     @swagger_auto_schema(
         operation_description="Obtener unidades de medida",
@@ -73,14 +73,14 @@ class ProductMeasurementView(GeneralAPIView):
 class ProductMeasurementDetailView(GeneralDetailAPIView):
     model = ProductMeasurement
 
-    serializer = ProductMeasurementSerializer  # model serializer
-    serializer2 = ProductMeasurementResDocSerializer  # Get All & Get By ID - response
+    serializer = ProductMeasurementSerializer  # model serializer: Post & Patch
+    serializer2 = ProductMeasurementResponseSerializer  # Get All & Get By ID - response
 
     # ### main methods =================
     @swagger_auto_schema(
         operation_description="Detalle de unidad de medida",
         responses={
-            200: openapi.Response("OK", ProductMeasurementOptDocSerializer),
+            200: openapi.Response("OK", ProductMeasurementResponseSerializer),
             404: openapi.Response("Not Found", NotFoundSerializer),
         },
     )
