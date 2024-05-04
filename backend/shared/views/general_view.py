@@ -138,3 +138,22 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
             return Response(
                 error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    def delete(self, request, pk):
+        try:
+            model_instance = get_object_or_404(self.model, pk=pk)
+            model_instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Http404:
+            not_found = NotFoundErrorResponseDTO(
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{self.model.__name__} with id '{pk}' not found",
+            )
+            return JsonResponse(not_found.__dict__, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            error = ErrorResponseDTO(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
+            )
+            return Response(
+                error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
