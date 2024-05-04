@@ -1,6 +1,9 @@
 from rest_framework import permissions
 from rest_framework.response import Response
 
+# ## transactions in Django (@Transactional)
+from django.db import transaction
+
 # ## docs openapi
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -54,15 +57,17 @@ class ProductMeasurementView(GeneralAPIView):
     def post(self, request):
         return super().post(request)
 
-    # ## override post method, but insertion is done in the parent class
-    # def custom_post_method(self, request, model_instance):
-    #     return Response(
-    #         {
-    #             "message": "Custom POST method",
-    #             "data": ProductMeasurementSerializer(model_instance).data,
-    #         },
-    #         status=201,
-    #     )
+    ## override post method, but serialize.valid is done in parent class
+    # def custom_post_method(self, request, serialized: ProductMeasurementSerializer):
+    #     with transaction.atomic():  # transaction, all or rollback
+    #         serialized.save()
+    #         return Response(
+    #             {
+    #                 "message": "Custom POST method",
+    #                 "data": serialized.data,
+    #             },
+    #             status=201
+    #         )
 
 
 class ProductMeasurementDetailView(GeneralDetailAPIView):
@@ -93,6 +98,18 @@ class ProductMeasurementDetailView(GeneralDetailAPIView):
     )
     def patch(self, request, pk):
         return super().patch(request, pk)
+
+    # ## override patch method, but serialize.valid is done in parent class
+    def custom_patch_method(self, request, serialized: ProductMeasurementSerializer):
+        with transaction.atomic():
+            serialized.save()
+            return Response(
+                {
+                    "message": "Custom PATCH method",
+                    "data": serialized.data,
+                },
+                status=200,
+            )
 
     @swagger_auto_schema(
         operation_description="Eliminar unidad de medida",

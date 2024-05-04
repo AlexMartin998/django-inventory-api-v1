@@ -29,7 +29,7 @@ class GeneralAPIView(APIView, PermissionRequiredMixin):
 
     # ## auxiliar methods =================
     # override post method
-    def custom_post_method(self, request, model_instance):
+    def custom_post_method(self, request, serialized):
         return None
 
     # ## main methods =================
@@ -48,10 +48,13 @@ class GeneralAPIView(APIView, PermissionRequiredMixin):
     def post(self, request):
         serializer = self.serializer(data=request.data)
         if serializer.is_valid():
-            model_instance = serializer.save()
-            aux_post_method_res = self.custom_post_method(request, model_instance)
-            if aux_post_method_res:
+            aux_post_method_res = self.custom_post_method(
+                request=request, serialized=serializer
+            )
+            if aux_post_method_res:  # total override
                 return aux_post_method_res
+            # model_instance = serializer.save() # after to override
+            serializer.save()  # after to be override
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         # Transform the errors dictionary into a list of strings
         invalid_fields = [
@@ -79,7 +82,7 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
     serializer2 = None  # Get All & Get By ID - response
 
     # ## auxiliar methods =================
-    def aux_patch_method(self, request, model_instance):
+    def custom_patch_method(self, request, serialized):
         return None
 
     # ## main methods =================
@@ -102,10 +105,12 @@ class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
                 model_instance, data=request.data, partial=True
             )
             if serializer.is_valid():
-                model_instance = serializer.save()
-                aux_patch_method_res = self.aux_patch_method(request, model_instance)
-                if aux_patch_method_res:
+                aux_patch_method_res = self.custom_patch_method(
+                    request=request, serialized=serializer
+                )
+                if aux_patch_method_res:  # total override
                     return aux_patch_method_res
+                serializer.save()  # after to be override
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
             # Transform the errors dictionary into a list of strings
