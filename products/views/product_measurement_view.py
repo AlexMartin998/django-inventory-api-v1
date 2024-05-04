@@ -6,7 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-from backend.shared.views.general_view import GeneralViewAPI
+from backend.shared.views.general_view import GeneralAPIView, GeneralDetailAPIView
 from backend.shared.constants.constants import page_size_openapi, page_openapi
 from backend.shared.serializers.serializers import BadRequestSerializerDoc
 
@@ -15,19 +15,18 @@ from products.models.product_measurement_model import ProductMeasurement
 from products.serializers.product_measurement_serializers import (
     ProductMeasurementSerializer,
     ProductMeasurementQueryDocWrapperSerializer,
+    ProductMeasurementResDocSerializer,
     ProductMeasurementFilterSerializer,
     ProductMeasurementOptDocSerializer,
 )
 
 
-class ProductMeasurementView(GeneralViewAPI):
+class ProductMeasurementView(GeneralAPIView):
     model = ProductMeasurement
     filter = ProductMeasurementFilter
 
     serializer = ProductMeasurementSerializer  # model serializer
-    serializer2 = (
-        ProductMeasurementQueryDocWrapperSerializer  # Get All & Get By ID - response
-    )
+    serializer2 = ProductMeasurementResDocSerializer  # Get All & Get By ID - response
 
     @swagger_auto_schema(
         operation_description="Obtener unidades de medida",
@@ -63,13 +62,15 @@ class ProductMeasurementView(GeneralViewAPI):
     #     )
 
 
-class ProductMeasurementDetailView(GeneralViewAPI):
-    serializer_class = ProductMeasurementSerializer
-    queryset = ProductMeasurement.objects.all()
-    permission_classes = (permissions.IsAuthenticated,)
+class ProductMeasurementDetailView(GeneralDetailAPIView):
+    model = ProductMeasurement
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    serializer = ProductMeasurementSerializer  # model serializer
+    serializer2 = ProductMeasurementResDocSerializer  # Get All & Get By ID - response
+
+    # ### main methods =================
+    def get(self, request, pk):
+        return super().get(request, pk)
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

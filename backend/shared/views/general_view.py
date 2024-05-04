@@ -1,6 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+from rest_framework import status
+from django.http import JsonResponse
 
 # authentication
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -8,10 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 
 
 from backend.shared.utils.pagination import CustomPagination
-from backend.dtos import ErrorResponseDTO
+from backend.dtos import ErrorResponseDTO, NotFoundErrorResponseDTO
 
 
-class GeneralViewAPI(APIView, PermissionRequiredMixin):
+class GeneralAPIView(APIView, PermissionRequiredMixin):
     # authentication class-based views - isAuth (no django permissions)
     permission_classes = [IsAuthenticated]
 
@@ -19,7 +23,7 @@ class GeneralViewAPI(APIView, PermissionRequiredMixin):
     filter = None
     required_fields = []
 
-    # serializers
+    # ## serializers =================
     serializer = None  # model serializer - POST & PUT
     serializer2 = None  # Get All & Get By ID - response
 
@@ -66,3 +70,34 @@ class GeneralViewAPI(APIView, PermissionRequiredMixin):
             invalid_fields=invalid_fields,
         )
         return Response(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GeneralDetailAPIView(APIView, PermissionRequiredMixin):
+    # authentication class-based views - isAuth (no django permissions)
+    permission_classes = [IsAuthenticated]
+
+    model = None
+    serializer = None
+    required_fields = []  # additonal fields to validate
+
+    # ## serializers =================
+    serializer = None  # model serializer - POST & PUT
+    serializer2 = None  # Get All & Get By ID - response
+
+    # ## auxiliar methods =================
+    def custom_put_method(self, request, model_instance):
+        return None
+
+    # ## main methods =================
+    def get(self, request, pk):
+        try:
+            model_instance = get_object_or_404(self.model, pk=pk)
+            serializer = self.serializer2(model_instance)
+            return Response(serializer.data)
+        except Http404:
+            not_found = NotFoundErrorResponseDTO(
+                status=status.HTTP_404_NOT_FOUND,
+                message=f"{self.model.__name__} with id '{pk}' not found",
+            )
+            return JsonResponse(not_found.__dict__, status=status.HTTP_404_NOT_FOUND)
+

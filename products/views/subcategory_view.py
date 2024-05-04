@@ -109,7 +109,7 @@ class SubcategoryDetailView(APIView):
     def get(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
-            # pass custom field to serializer
+            # pass custom field to serializer (manual way) | se puede setear la logica en el mismo serializer
             data = {
                 **subcategory.__dict__,
                 'some_custom_field': 'Some custom field value'
