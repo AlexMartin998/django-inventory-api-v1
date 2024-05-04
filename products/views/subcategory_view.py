@@ -32,7 +32,7 @@ from products.filters.subcategory_filters import SubcategoryFilter
 
 
 class SubcategoryView(APIView):
-    # with class-based views, the method is determined by the actual method on the class - isAuth
+    # with class-based views, the method is determined by the actual method on the class - isAuth (no django permissions)
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
@@ -61,7 +61,7 @@ class SubcategoryView(APIView):
             message="Bad Request",
             invalid_fields=invalid_fields,
         )
-        return JsonResponse(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
+        return Response(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
         # ## with serializer:
         # bad_request = BadRequestSerializer(
         #     data={
@@ -85,7 +85,7 @@ class SubcategoryView(APIView):
     def get(self, request):
         subcategories = SubCategory.objects.all().order_by("id")
         pagination = CustomPagination()
-        serializer = SubcategorySerializer(subcategories, many=True)
+        serializer = SubcategoryResDocSerializer(subcategories, many=True)
 
         # filter
         subcategory_filter = SubcategoryFilter(request.GET, queryset=subcategories)
@@ -97,6 +97,8 @@ class SubcategoryView(APIView):
 
 
 class SubcategoryDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
         operation_description="Detalle de Subcategoria",
         responses={
@@ -107,7 +109,12 @@ class SubcategoryDetailView(APIView):
     def get(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
-            serializer = SubcategorySerializer(subcategory)
+            # pass custom field to serializer
+            data = {
+                **subcategory.__dict__,
+                'some_custom_field': 'Some custom field value'
+            }
+            serializer = SubcategoryResDocSerializer(data)
             return Response(serializer.data)
         except Http404:
             not_found = NotFoundErrorResponseDTO(
