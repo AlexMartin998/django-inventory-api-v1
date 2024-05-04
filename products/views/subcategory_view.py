@@ -6,7 +6,6 @@ from rest_framework import status
 from django.http import JsonResponse
 
 # authentication
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 # docs openapi
@@ -33,6 +32,9 @@ from products.filters.subcategory_filters import SubcategoryFilter
 
 
 class SubcategoryView(APIView):
+    # with class-based views, the method is determined by the actual method on the class
+    permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
         operation_description="Creación de Subcategoria",
         request_body=SubcategorySerializer,
@@ -41,7 +43,6 @@ class SubcategoryView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
-    @permission_classes([IsAuthenticated])
     def post(self, request):
         serializer = SubcategorySerializer(data=request.data)
 
@@ -81,7 +82,6 @@ class SubcategoryView(APIView):
         query_serializer=SubcategoryFilterSerializer,
         manual_parameters=[page_size_openapi, page_openapi],
     )
-    @permission_classes([IsAuthenticated])
     def get(self, request):
         subcategories = SubCategory.objects.all().order_by("id")
         pagination = CustomPagination()
@@ -104,7 +104,6 @@ class SubcategoryDetailView(APIView):
             404: openapi.Response("Not Found", NotFoundSerializer),
         },
     )
-    @permission_classes([IsAuthenticated])
     def get(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)
@@ -147,7 +146,6 @@ class SubcategoryDetailView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
-    @permission_classes([IsAuthenticated])
     def patch(self, request, id):
         # def put(self, request, id):
         try:
@@ -193,7 +191,6 @@ class SubcategoryDetailView(APIView):
             400: openapi.Response("Bad Request", BadRequestSerializerDoc),
         },
     )
-    @permission_classes([IsAuthenticated])
     def delete(self, request, id):
         try:
             subcategory = get_object_or_404(SubCategory, pk=id)

@@ -5,7 +5,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User
 
 
-
 # ### Serializer: Python to JSON  &  Deserialize: JSON to Python
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +17,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # fields tuple q podran ser consultados (se enviaran en la response del view)
-        fields = ('id', 'email', 'name', 'last_name', 'created_at') # specifying fields
+        fields = ("id", "email", "name", "last_name", "created_at")  # specifying fields
         # fields = '__all__' # all fields
 
 
@@ -27,10 +26,26 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         # ### set fields to jwt payload - how to send user and token instead of access/refresh???
         token = super().get_token(user)
-        token['email'] = user.email # set email in JWT
-        token['avatar'] = user.avatar.url
-        token['is_staff'] = user.is_staff # isAdmin?
-        token['name'] = user.name
-        token['last_name'] = user.last_name
+        token["email"] = user.email  # set email in JWT
+        token["avatar"] = user.avatar.url
+        token["is_staff"] = user.is_staff  # isAdmin?
+        token["name"] = user.name
+        token["last_name"] = user.last_name
         return token
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Customize response data
+        data.update(
+            {
+                "user": {
+                    "email": self.user.email,
+                    "avatar": self.user.avatar.url,
+                    "is_staff": self.user.is_staff,
+                    "name": self.user.name,
+                    "last_name": self.user.last_name,
+                    "full_name": f"{self.user.name} {self.user.last_name}",
+                }
+            }
+        )
+        return data
