@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     # rest framework --- custom
     'rest_framework',
     
+    # W JWT y tener en balcklist los JWT usados y 1 q no se puedan volver a utilizar
+    'rest_framework_simplejwt.token_blacklist',
+    
     # filters
     'django_filters',
     
@@ -79,11 +82,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
-    # ### 404 middleware
+
+
+    # ### Custom Middlewares
+    # ## 404 middleware
     'backend.shared.middlewares.middlewares.Custom404Middleware',
 ]
 
+# main project urls
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -102,6 +108,7 @@ TEMPLATES = [
     },
 ]
 
+# main project wsgi
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
@@ -149,10 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -161,7 +165,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-# ### ### ### =====================================
+
+
+
+# ### ### ### =================================================
 # ### Custom User Model: app.Model
 AUTH_USER_MODEL = 'users.User'
 
@@ -169,13 +176,18 @@ AUTH_USER_MODEL = 'users.User'
 
 
 # ### Static files: Vamos a meter Reat dentro d Django (esta app es asi, pudo haber sido solo api y react aparte)
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'dist/static')
 ]
-MEDIA_URL = 'media/'
+MEDIA_URL = 'media/' # se guarda en este dir las images - almacenado local
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 
 
@@ -183,6 +195,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CORS_ALLOWED_ORIGINS = os.environ.get('ALLOWED_HOSTS').split(',')
 
 CORS_ALLOW_CREDENTIALS = True
+
 
 
 # APPEND_SLASH = False
@@ -204,8 +217,10 @@ USE_TZ = True
 
 
 
+
 # ### JWT
 SIMPLE_JWT = {
+    # lifetime
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),
     'REFRESH_TOKEN_LIFETIME': timedelta(hours=3),
     'ROTATE_REFRESH_TOKENS': True,
@@ -239,6 +254,10 @@ REST_FRAMEWORK = {
     )
 }
 
+
+
+
+# ### Swagger
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'SECURITY_DEFINITIONS': {
