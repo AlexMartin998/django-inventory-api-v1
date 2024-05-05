@@ -62,4 +62,6 @@ urlpatterns = [
     
     path('api/v1/product-measures/', include('products.urls.product_measurement_urls')),
 
+    path("api/v1/book/", include("books.urls.book_urls")),
+
 ]
