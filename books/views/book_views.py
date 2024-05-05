@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # ## docs openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -22,13 +23,28 @@ from books.serializers.book_serializers import (
     BookOptDocSerializer,
 )
 
+from backend.shared.utils.pagination import CustomPagination
+from backend.shared.constants.constants import (
+    PAGINATION_DEFAULT_PAGE_NUMBER,
+    PAGINATION_DEFAULT_PAGE_SIZE,
+    PAGINATION_PAGE_SIZE_KEY,
+    PAGINATION_PAGE_NUMBER_KEY,
+)
+from books.repositories.book_repository import BookRepository
+from books.services.book_service import BookService
 
-class BookView(GeneralAPIView):
+
+class BookView(APIView):
     model = Book
     filter = BookFilter
 
     serializer = BookSerializer  # model serializer
     serializer2 = BookResponseSerializer  # response
+
+    # constructor
+    def __init__(self):
+        self.book_repository = BookRepository()
+        self.book_service = BookService(self.book_repository)
 
     @swagger_auto_schema(
         operation_description="Get All Books",
@@ -39,18 +55,20 @@ class BookView(GeneralAPIView):
         manual_parameters=[page_size_openapi, page_openapi],
     )
     def get(self, request):
-        return super().get(request)
+        # Get the filter parameters and page number from the request
+        filter_params = request.GET
+        page_number = request.GET.get(
+            PAGINATION_PAGE_NUMBER_KEY, PAGINATION_DEFAULT_PAGE_NUMBER
+        )
+        page_size = request.GET.get(
+            PAGINATION_PAGE_SIZE_KEY, PAGINATION_DEFAULT_PAGE_SIZE
+        )
 
-    @swagger_auto_schema(
-        operation_description="Create Book",
-        request_body=BookSerializer,
-        responses={
-            201: openapi.Response("OK", BookOptDocSerializer),
-            400: openapi.Response("Bad Request", BadRequestSerializerDoc),
-        },
-    )
-    def post(self, request):
-        return super().post(request)
+        # Call the get_all method
+        books_data = self.book_service.get_all(filter_params, page_number, page_size)
+
+        # Return the paginated response
+        return Response(books_data)
 
 
 class BookDetailView(GeneralDetailAPIView):
@@ -62,7 +80,7 @@ class BookDetailView(GeneralDetailAPIView):
     @swagger_auto_schema(
         operation_description="Get Book by ID",
         responses={
-            200: openapi.Response("OK", BookOptDocSerializer),
+            200: openapi.Response("OK", BookResponseSerializer),
             404: openapi.Response("Not Found", NotFoundSerializer),
         },
     )

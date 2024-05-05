@@ -83,16 +83,18 @@ class SubcategoryView(APIView):
         manual_parameters=[page_size_openapi, page_openapi],
     )
     def get(self, request):
-        subcategories = SubCategory.objects.all().order_by("id")
+        subcategories_queryset = SubCategory.objects.all().order_by("id")
         pagination = CustomPagination()
-        serializer = SubcategoryResDocSerializer(subcategories, many=True)
 
         # filter
-        subcategory_filter = SubcategoryFilter(request.GET, queryset=subcategories)
-        subcategories = subcategory_filter.qs
+        subcategory_filter = SubcategoryFilter(
+            request.GET, queryset=subcategories_queryset
+        )
+        subcategories_queryset = subcategory_filter.qs
 
-        result_page = pagination.paginate_queryset(subcategories, request)
-        serializer = SubcategorySerializer(result_page, many=True)
+        # Django runs the queryset here
+        result_page = pagination.paginate_queryset(subcategories_queryset, request)
+        serializer = SubcategoryResDocSerializer(result_page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
 
