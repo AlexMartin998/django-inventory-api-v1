@@ -1,15 +1,30 @@
-from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
+from rest_framework.exceptions import NotAuthenticated
+from rest_framework import status
 
-from backend.dtos import ErrorResponseDTO, NotFoundErrorResponseDTO
+from backend.dtos import (
+    ErrorResponseDTO,
+    NotFoundErrorResponseDTO,
+    UnauthorizedErrorResponseDTO,
+)
 from backend.shared.exceptions.resource_not_found_exception import (
     ResourceNotFoundException,
 )
 from backend.shared.exceptions.invalid_fields_exception import InvalidFieldsException
+from backend.shared.exceptions.unauthorized_exception import UnauthorizedException
 
 
 def handle_rest_exception_helper(exc):
+    print(f"Exception: {exc}")
+    print(type(exc))
+
+    if isinstance(exc, NotAuthenticated) or isinstance(exc, UnauthorizedException):
+        error = UnauthorizedErrorResponseDTO(
+            status=status.HTTP_401_UNAUTHORIZED, message=str(exc)
+        )
+        return Response(error.__dict__, status=status.HTTP_401_UNAUTHORIZED)
+
     if isinstance(exc, ResourceNotFoundException):
         not_found = NotFoundErrorResponseDTO(
             status=status.HTTP_404_NOT_FOUND,
