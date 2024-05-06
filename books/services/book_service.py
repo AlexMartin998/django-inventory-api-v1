@@ -1,11 +1,15 @@
-from backend.shared.utils.pagination import CustomPagination
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 from books.models.book_model import Book
 from books.filters.book_filters import BookFilter
+from books.repositories.book_repository import BookRepository
 from books.serializers.book_serializers import BookResponseSerializer, BookSerializer
 
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from backend.shared.exceptions.resource_not_found_exception import (
+    ResourceNotFoundException,
+)
+from backend.shared.exceptions.invalid_fields_exception import InvalidFieldsException
 
 from backend.shared.constants.constants import (
     PAGINATION_DEFAULT_PAGE_NUMBER,
@@ -14,19 +18,20 @@ from backend.shared.constants.constants import (
 
 
 class BookService:
-    model = Book
+
+    # model = Book
     filter = BookFilter
 
     serializer = BookSerializer  # model serializer
     serializer2 = BookResponseSerializer  # response
 
     # constructor: inject the book repository
-    def __init__(self, book_repository):
+    def __init__(self, book_repository: BookRepository):
         self.book_repository = book_repository
 
     from django.core.paginator import EmptyPage, PageNotAnInteger
 
-    def get_all(
+    def find_all(
         self,
         filter_params=None,
         page_number=PAGINATION_DEFAULT_PAGE_NUMBER,
@@ -70,14 +75,47 @@ class BookService:
             "data": serializer.data,
         }
 
-    def get_one(self, book_id):
-        return self.book_repository.find_one(book_id)
+    def find_one(self, book_id) -> dict:
+        book = self.get_by_id(book_id)
+        if not book:
+            raise ResourceNotFoundException(
+                message=f"Book with id '{book_id}' not found"
+            )
 
-    def create(self, data):
-        return self.book_repository.create(data)
+        serializer = self.serializer2(book)
+        return serializer.data
 
-    def update(self, book_id, data):
-        return self.book_repository.update(book_id, data)
+    def create(self, book_data) -> dict:
+        serializer = self.serializer(data=book_data)
+        if not serializer.is_valid():
+            raise InvalidFieldsException(
+                message="Invalid fields", fields=serializer.errors.items()
+            )
+        book = self.book_repository.create(serializer.validated_data)
+        return self.serializer(book).data
 
-    def delete(self, book_id):
-        return self.book_repository.delete(book_id)
+    def update(self, book_id, book_data) -> dict:
+        book = self.get_by_id(book_id)
+        serializer = self.serializer(book, data=book_data, partial=True)
+        if not serializer.is_valid():
+            raise InvalidFieldsException(
+                message="Invalid fields", fields=serializer.errors.items()
+            )
+        book = self.book_repository.update(book_id, serializer.validated_data)
+        return self.serializer(book).data
+
+    def delete(self, book_id) -> bool:
+        was_deleted = self.book_repository.delete(book_id)
+        if not was_deleted:
+            raise ResourceNotFoundException(
+                message=f"Book with id '{book_id}' not found"
+            )
+        return was_deleted
+
+    def get_by_id(self, book_id) -> Book:
+        book = self.book_repository.find_one(book_id)
+        if not book:
+            raise ResourceNotFoundException(
+                message=f"Book with id '{book_id}' not found"
+            )
+        return book
