@@ -6,7 +6,7 @@ from backend.shared.models.models import AuditDateModel
 class Book(AuditDateModel):
     name = models.CharField(max_length=100)
     author = models.CharField(max_length=100)
-    code = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, unique=True)
     state = models.BooleanField(default=True)
 
     class Meta:
