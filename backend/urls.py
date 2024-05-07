@@ -64,4 +64,6 @@ urlpatterns = [
 
     path("api/v1/book/", include("books.urls.book_urls")),
 
+    path("api/v1/author/", include("books.urls.author_urls")),
+
 ]
