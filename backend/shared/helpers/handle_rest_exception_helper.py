@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
 
+import traceback
+
+
 from backend.dtos import (
     ErrorResponseDTO,
     NotFoundErrorResponseDTO,
@@ -42,7 +45,9 @@ def handle_rest_exception_helper(exc):
         )
         return Response(bad_request.__dict__, status=status.HTTP_400_BAD_REQUEST)
     else:
+        print(traceback.format_exc())
         error = ErrorResponseDTO(
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(exc)
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=str(exc),
         )
         return Response(error.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
