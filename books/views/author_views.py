@@ -3,11 +3,15 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-from backend.shared.constants.constants import page_size_openapi, page_openapi
+from backend.shared.views.general_view_service import (
+    GeneralAPIViewService,
+    GeneralDetailAPIViewService,
+)
 from backend.shared.serializers.serializers import (
     BadRequestSerializerDoc,
     NotFoundSerializer,
 )
+from backend.shared.constants.constants import page_size_openapi, page_openapi
 
 from books.repositories.author_repository import AuthorRepository
 from books.services.author_service import AuthorService
@@ -17,11 +21,6 @@ from books.serializers.author_serializers import (
     AuthorResponseSerializer,
     AuthorFilterSerializer,
     AuthorOptDocSerializer,
-)
-
-from backend.shared.views.general_view_service import (
-    GeneralAPIViewService,
-    GeneralDetailAPIViewService,
 )
 
 
