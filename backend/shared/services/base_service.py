@@ -31,18 +31,16 @@ class BaseService:
 
         # filter
         if filter_params:
-            queryset_filter = self.filter(filter_params, queryset=queryset).qs
+            queryset = self.filter(filter_params, queryset=queryset).qs
 
         # pagination
-        paginator = Paginator(queryset_filter, page_size)
+        paginator = Paginator(queryset, page_size)
 
         try:
-            page_obj = paginator.page((page_number))
+            page_obj = paginator.page(page_number)
         except PageNotAnInteger:
-            # If page_number is not an integer, deliver first page.
             page_obj = paginator.page(1)
         except EmptyPage:
-            # If page_number is out of range, deliver an empty page.
             page_obj = []
 
         if isinstance(page_obj, list):
@@ -56,6 +54,7 @@ class BaseService:
             count = paginator.count
             total_pages = paginator.num_pages
 
+        # serializer
         serializer = self.serializer2(page_obj, many=True)
         return {
             "meta": {
@@ -77,7 +76,7 @@ class BaseService:
             model_instance = self.repository.create(serializer.validated_data)
             return self.serializer(model_instance).data  # xq quiero el id
         raise InvalidFieldsException(
-            message="Bad Request", invalid_fields=serializer.errors.items()
+            message="Bad Request", fields=serializer.errors.items()
         )
 
     def update(self, pk, data) -> dict:
