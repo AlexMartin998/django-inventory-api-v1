@@ -29,8 +29,6 @@ class BookService:
     def __init__(self, book_repository: BookRepository):
         self.book_repository = book_repository
 
-    from django.core.paginator import EmptyPage, PageNotAnInteger
-
     def find_all(
         self,
         filter_params=None,
@@ -64,7 +62,7 @@ class BookService:
             count = paginator.count
             total_pages = paginator.num_pages
 
-        serializer = self.serializer(page_obj, many=True)
+        serializer = self.serializer2(page_obj, many=True)
         return {
             "meta": {
                 "next": next_page,
@@ -77,11 +75,6 @@ class BookService:
 
     def find_one(self, book_id) -> dict:
         book = self.get_by_id(book_id)
-        if not book:
-            raise ResourceNotFoundException(
-                message=f"Book with id '{book_id}' not found"
-            )
-
         serializer = self.serializer2(book)
         return serializer.data
 
@@ -92,7 +85,7 @@ class BookService:
                 message="Invalid fields", fields=serializer.errors.items()
             )
         book = self.book_repository.create(serializer.validated_data)
-        return self.serializer(book).data
+        return self.serializer(book).data  # x el id
 
     def update(self, book_id, book_data) -> dict:
         book = self.get_by_id(book_id)
