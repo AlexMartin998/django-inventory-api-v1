@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 import traceback
 
@@ -19,8 +20,12 @@ from backend.shared.exceptions.unauthorized_exception import UnauthorizedExcepti
 
 
 def handle_rest_exception_helper(exc):
-    print(f"Exception: {exc}")
-    print(type(exc))
+
+    if isinstance(exc, InvalidToken):
+        error = UnauthorizedErrorResponseDTO(
+            status=status.HTTP_401_UNAUTHORIZED, message="Invalid token"
+        )
+        return Response(error.__dict__, status=status.HTTP_401_UNAUTHORIZED)
 
     if isinstance(exc, NotAuthenticated) or isinstance(exc, UnauthorizedException):
         error = UnauthorizedErrorResponseDTO(
