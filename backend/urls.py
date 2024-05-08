@@ -68,4 +68,6 @@ urlpatterns = [
 
     path("api/v1/comment/", include("books.urls.comment_urls")),
 
+    path("api/v1/publisher/", include("books.urls.publisher_urls")),
+
 ]
