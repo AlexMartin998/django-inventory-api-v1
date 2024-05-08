@@ -62,4 +62,18 @@ urlpatterns = [
     
     path('api/v1/product-measures/', include('products.urls.product_measurement_urls')),
 
+    path("api/v1/book/", include("books.urls.book_urls")),
+
+    path("api/v1/author/", include("books.urls.author_urls")),
+
+    path("api/v1/comment/", include("books.urls.comment_urls")),
+
+    path("api/v1/publisher/", include("books.urls.publisher_urls")),
+
+    path("api/v1/aba/", include("books.urls.aba_urls")),
+
+    path("api/v1/aaran/", include("books.urls.aaran_urls")),
+
+    path("api/v1/alex/", include("books.urls.alex_urls")),
+
 ]
