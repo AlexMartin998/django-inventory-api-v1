@@ -13,8 +13,6 @@ from backend.shared.serializers.serializers import (
 )
 
 from backend.shared.constants.constants import page_size_openapi, page_openapi
-from books.repositories.publisher_repository import PublisherRepository
-from books.services.publisher_service import PublisherService
 from books.serializers.publisher_serializers import (
     PublisherSerializer,
     PublisherQueryDocWrapperSerializer,
@@ -60,8 +58,7 @@ class PublisherDetailView(GeneralDetailAPIViewService):
 
     # constructor: DI
     def __init__(self):
-        publisher_repository = PublisherRepository()
-        publisher_service = PublisherService(publisher_repository)
+        publisher_service = container.publisher_service()
         super().__init__(publisher_service)
 
     @swagger_auto_schema(
