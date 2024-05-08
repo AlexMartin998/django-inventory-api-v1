@@ -7,6 +7,9 @@ from books.services.publisher_service import PublisherService
 from books.models.aba_model import Aba
 from books.repositories.aba_repository import AbaRepository
 from books.services.aba_service import AbaService
+from books.models.aaran_model import Aaran
+from books.repositories.aaran_repository import AaranRepository
+from books.services.aaran_service import AaranService
 
 
 class Container(containers.DeclarativeContainer):
@@ -24,6 +27,10 @@ class Container(containers.DeclarativeContainer):
     aba_model = providers.Object(Aba)
     aba_repository = providers.Singleton(AbaRepository, model=aba_model)
     aba_service = providers.Singleton(AbaService, repository=aba_repository)
+
+    aaran_model = providers.Object(Aaran)
+    aaran_repository = providers.Singleton(AaranRepository, model=aaran_model)
+    aaran_service = providers.Singleton(AaranService, repository=aaran_repository)
 
 
 container = Container()
