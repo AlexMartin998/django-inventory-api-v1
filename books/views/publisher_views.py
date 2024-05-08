@@ -23,13 +23,14 @@ from books.serializers.publisher_serializers import (
     PublisherOptDocSerializer,
 )
 
+from backend.shared.di.di import container
+
 
 class PublisherView(GeneralAPIViewService):
 
     # constructor: DI
     def __init__(self):
-        publisher_repository = PublisherRepository()
-        publisher_service = PublisherService(publisher_repository)
+        publisher_service = container.publisher_service()
         super().__init__(publisher_service)
 
     @swagger_auto_schema(

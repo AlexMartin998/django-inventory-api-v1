@@ -16,7 +16,7 @@ class PublisherService(BaseService):
     serializer = PublisherSerializer
     serializer2 = PublisherResponseSerializer
 
-    def __init__(self, repository: PublisherRepository):
+    def __init__(self, repository):
         super().__init__(repository)
 
     def some_extra_method(self):
