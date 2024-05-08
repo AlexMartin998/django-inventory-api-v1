@@ -76,4 +76,6 @@ urlpatterns = [
 
     path("api/v1/alex/", include("books.urls.alex_urls")),
 
+    path("api/v1/candy/", include("candies.urls.candy_urls")),
+
 ]

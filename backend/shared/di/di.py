@@ -15,6 +15,11 @@ from books.models.alex_model import Alex
 from books.repositories.alex_repository import AlexRepository
 from books.services.alex_service import AlexService
 
+from candies.models.candy_model import Candy
+from candies.repositories.candy_repository import CandyRepository
+from candies.services.candy_service import CandyService
+
+
 class Container(containers.DeclarativeContainer):
     # ### Publisher ========================
     # Manager isn't accessible via Publisher instances - Error cuando se inyecta la instancia y no el modelo (sol. Object)
@@ -38,5 +43,10 @@ class Container(containers.DeclarativeContainer):
     alex_model = providers.Object(Alex)
     alex_repository = providers.Singleton(AlexRepository, model=alex_model)
     alex_service = providers.Singleton(AlexService, repository=alex_repository)
+
+    candy_model = providers.Object(Candy)
+    candy_repository = providers.Singleton(CandyRepository, model=candy_model)
+    candy_service = providers.Singleton(CandyService, repository=candy_repository)
+
 
 container = Container()
