@@ -11,6 +11,9 @@ from books.models.aaran_model import Aaran
 from books.repositories.aaran_repository import AaranRepository
 from books.services.aaran_service import AaranService
 
+from books.models.alex_model import Alex
+from books.repositories.alex_repository import AlexRepository
+from books.services.alex_service import AlexService
 
 class Container(containers.DeclarativeContainer):
     # ### Publisher ========================
@@ -32,5 +35,8 @@ class Container(containers.DeclarativeContainer):
     aaran_repository = providers.Singleton(AaranRepository, model=aaran_model)
     aaran_service = providers.Singleton(AaranService, repository=aaran_repository)
 
+    alex_model = providers.Object(Alex)
+    alex_repository = providers.Singleton(AlexRepository, model=alex_model)
+    alex_service = providers.Singleton(AlexService, repository=alex_repository)
 
 container = Container()

@@ -74,4 +74,6 @@ urlpatterns = [
 
     path("api/v1/aaran/", include("books.urls.aaran_urls")),
 
+    path("api/v1/alex/", include("books.urls.alex_urls")),
+
 ]
